@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 27 19:16:43 2019
+
+@author: utkarsh
+
+SLIDER(GUI) DEMO IN PYTHON
+
+The Problem Being Solved in the program can be seen in the readme file
+
+"Implementing Slider in Digital Image processing tasks enables us to better interpret the results by varaying the available parameter "
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+
+fig = plt.figure(num=2,figsize=[6.4,4.8])
+plt.subplots_adjust(bottom=0.3,wspace=0.6)                
+ax1 = fig.add_subplot(131)
+ax2 = fig.add_subplot(132)
+ax3 = fig.add_subplot(133)      
+
+k=np.arange(1,257,1)
+m=np.arange(1,257,1)
+k,m=np.meshgrid(k,m)
+w=2*np.pi
+theta=0
+Z=np.cos(w*(k*np.cos(theta)+m*np.sin(theta)))
+"""
+CREATE TWO AXES(As we want to insert two sliders) WHERE YOU WANT TO PLACE YOUR SLIDER [LEFT,BOTTOM,WIDTH,HEIGHT]
+
+"""
+a=plt.axes([0.25,0.2,0.65,0.03])
+b=plt.axes([0.25,0.1,0.65,0.03])
+
+"""
+Explaination: slider1=Slider(a,'w',0,np.pi,valinit=0,valfmt='%1.2f',color='green')
+                            (Axes,Name_of_Slider,Initial_Value,Final_Value,Default_Value,Decimal_Precision(Eg:2 Digit Pression),Colour_Of_Slider) )
+"""
+slider1=Slider(a,'w',0,np.pi,valinit=0,valfmt='%1.2f',color='green')
+slider2=Slider(b,'theta',0,2*np.pi,valinit=0,valfmt='%1.2f',color='green')
+
+def angle(w,theta,k,m):
+    Z=np.cos(w*(k*np.cos(theta)+m*np.sin(theta)))
+    return Z
+
+
+def plot(Z,M,P):
+
+    ax1.set_title('THE PLANE WAVE')
+    ax1.imshow(Z)
+    ax2.set_title('FOURIER MAGNITUDE')
+    ax2.imshow(M)
+    ax3.set_title('FOURIER PHASE')
+    ax3.imshow(P)
+   
+"""
+slider1.val gets the value  from slider 1
+slider2.val gets the value  from slider 2
+"""    
+def update(value):
+
+    w=slider1.val
+    theta=slider2.val
+    ax1.clear()
+    ax2.clear()
+    ax3.clear()
+    k=np.arange(1,257,1)
+    m=np.arange(1,257,1)
+    k,m=np.meshgrid(k,m)
+    Z=angle(w,theta,k,m)
+    f=np.fft.fft2(Z)
+    magnitude_spectrum=20*np.log(np.abs(f))
+    
+    phase=np.angle(f)
+    plot(Z,magnitude_spectrum,phase)
+
+"""
+When Slider is moved "update" function is called whose argument "value" gets the current value of the slider
+
+""" 
+slider1.on_changed(update)
+slider2.on_changed(update)
+plt.show()    
+    
+    
